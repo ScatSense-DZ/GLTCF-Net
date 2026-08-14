@@ -15,7 +15,6 @@ from tensorflow.keras import layers
 
 @keras.utils.register_keras_serializable(package="TransUNet")
 class PositionEmbedding(layers.Layer):
-    """可训练的位置编码。"""
 
     def __init__(self, num_tokens, embed_dim, **kwargs):
         super().__init__(**kwargs)
@@ -44,7 +43,6 @@ class PositionEmbedding(layers.Layer):
 
 
 def conv_block(x, filters, dropout_rate=0.0, name="conv_block"):
-    """U-Net 的双卷积模块。"""
 
     for index in range(1, 3):
         x = layers.Conv2D(
@@ -80,7 +78,6 @@ def transformer_block(
     dropout_rate=0.1,
     name="transformer",
 ):
-    """Pre-Norm Transformer Encoder Block。"""
 
     # Multi-Head Self-Attention
     residual = x
@@ -140,7 +137,6 @@ def transformer_block(
 
 
 def decoder_block(x, skip, filters, dropout_rate=0.0, name="decoder"):
-    """上采样并融合 CNN 编码器的跳跃特征。"""
 
     x = layers.Conv2DTranspose(
         filters=filters,
@@ -184,14 +180,6 @@ def TransUnet(
     dropout_rate=0.1,
     output_activation=None,
 ):
-    """
-    用于点对点连续值预测的轻量 TransUNet。
-
-    output_activation:
-        None      -> 无范围限制的连续值预测
-        "sigmoid" -> [0, 1] 范围内的连续值预测
-        "tanh"    -> [-1, 1] 范围内的连续值预测
-    """
 
     if image_size % 16 != 0:
         raise ValueError("image_size 必须能被 16 整除")
@@ -207,8 +195,6 @@ def TransUnet(
         name="images",
     )
 
-    # 如果输入是 0~255，可在这里归一化：
-    # x = layers.Rescaling(1.0 / 255.0)(inputs)
     x = inputs
 
     encoder_filters = [
@@ -240,7 +226,6 @@ def TransUnet(
     feature_size = image_size // 16
     num_tokens = feature_size * feature_size
 
-    # 将 CNN 特征投影到 Transformer 的 embed_dim。
     x = layers.Conv2D(
         filters=embed_dim,
         kernel_size=1,
