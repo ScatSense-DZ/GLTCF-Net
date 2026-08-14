@@ -313,7 +313,6 @@ def TransUnet(
 
     return model
 
-
 def main():
     model = TransUnet(
         image_size=128,
