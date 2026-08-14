@@ -13,7 +13,6 @@ from tensorflow.keras import layers
 
 
 class PatchEmbedding(layers.Layer):
-    """将图像切成 Patch，并添加可训练的位置编码。"""
 
     def __init__(self, image_size, patch_size, embed_dim, **kwargs):
         super().__init__(**kwargs)
@@ -28,7 +27,6 @@ class PatchEmbedding(layers.Layer):
         self.grid_size = image_size // patch_size
         self.num_patches = self.grid_size**2
 
-        # 切分 Patch，同时将每个 Patch 映射到 embed_dim 维
         self.projection = layers.Conv2D(
             filters=embed_dim,
             kernel_size=patch_size,
@@ -248,15 +246,6 @@ def Vit(
     mlp_dim=512,
     dropout_rate=0.1,
 ):
-    """
-    点对点连续值预测模型。
-
-    输入:
-        [B, 128, 128, 3]
-
-    输出:
-        [B, 128, 128, 1]
-    """
 
     if image_size % patch_size != 0:
         raise ValueError("image_size 必须能被 patch_size 整除")
@@ -284,7 +273,6 @@ def Vit(
         name="patch_embedding",
     )(x)
 
-    # 12 层 Transformer 编码器
     for index in range(depth):
         x = TransformerEncoder(
             embed_dim=embed_dim,
