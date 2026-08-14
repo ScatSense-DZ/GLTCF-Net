@@ -14,8 +14,6 @@ from tensorflow.keras import layers
 
 
 def conv_block(x, filters, dropout_rate=0.0, name="conv_block"):
-    """两层卷积组成的 U-Net 特征提取块。"""
-
     x = layers.Conv2D(
         filters=filters,
         kernel_size=3,
@@ -53,13 +51,6 @@ def encoder_block(
     dropout_rate=0.0,
     name="encoder",
 ):
-    """
-    编码器模块。
-
-    返回:
-        skip: 用于解码器 skip connection 的特征
-        pooled: 下采样后的特征
-    """
 
     skip = conv_block(
         x,
@@ -85,7 +76,6 @@ def decoder_block(
     dropout_rate=0.0,
     name="decoder",
 ):
-    """上采样并融合对应编码器特征"""
 
     x = layers.Conv2DTranspose(
         filters=filters,
@@ -133,11 +123,8 @@ def Unet(
         name="images",
     )
 
-    # 如果原始输入是 0~255，可取消下一行注释。
-    # x = layers.Rescaling(1.0 / 255.0, name="rescaling")(inputs)
     x = inputs
 
-    # 编码器
     # 128x128
     skip1, x = encoder_block(
         x,
@@ -178,7 +165,6 @@ def Unet(
         name="bottleneck",
     )
 
-    # 解码器
     # 8x8 -> 16x16
     x = decoder_block(
         x,
