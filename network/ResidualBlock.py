@@ -5,9 +5,9 @@ from tensorflow.keras import layers, models, Input
 
 
 def ResidualBlock(x, filters):
-    """标准的残差模块 (Residual blocks)"""
+    """Residual blocks"""
     shortcut = x
-    # 如果通道不一致，调整 shortcut 通道数
+
     if x.shape[-1] != filters:
         shortcut = layers.Conv2D(filters, 1, padding='same')(shortcut)
 
