@@ -44,7 +44,6 @@ def conv_bn_act(
 
 
 def basic_block(x, filters, strides=1, name="block"):
-    """ResNet18/34 使用的 Basic Block。"""
 
     shortcut = x
 
@@ -97,7 +96,6 @@ def make_resnet_stage(x, filters, blocks, first_stride, name):
 
 
 def decoder_block(x, skip, filters, name):
-    """上采样并融合编码器特征。"""
 
     x = layers.Conv2DTranspose(
         filters=filters,
@@ -128,7 +126,6 @@ def decoder_block(x, skip, filters, name):
             name=f"{name}_fusion",
         )
 
-    # 每层只保留一个残差块，进一步降低参数量。
     return basic_block(
         x,
         filters=filters,
@@ -143,12 +140,6 @@ def ResNet18(
     decoder_filters=(256, 128, 64, 32, 16),
     output_activation=None,
 ):
-    """
-    ResNet18 编码器 + 轻量残差解码器。
-
-    输入: [B, 128, 128, 3]
-    输出: [B, 128, 128, 1]
-    """
 
     if image_size % 32 != 0:
         raise ValueError("image_size 必须能被 32 整除")
@@ -161,7 +152,6 @@ def ResNet18(
         name="images",
     )
 
-    # 输入是否归一化应和数据加载流程保持一致。
     x = inputs
 
     # 128x128 -> 64x64
@@ -180,8 +170,6 @@ def ResNet18(
         padding="same",
         name="stem_pool",
     )(c1)
-
-    # ResNet18 的 block 数量为 [2, 2, 2, 2]。
 
     # 32x32，64 channels
     c2 = make_resnet_stage(
@@ -266,7 +254,6 @@ def ResNet18(
         name="prediction_features",
     )
 
-    # 点对点连续值预测，默认使用线性输出。
     outputs = layers.Conv2D(
         filters=output_channels,
         kernel_size=1,
